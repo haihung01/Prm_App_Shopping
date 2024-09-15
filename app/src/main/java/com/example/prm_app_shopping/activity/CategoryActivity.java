@@ -17,15 +17,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.prm_app_shopping.R;
-import com.example.prm_app_shopping.adapters.CategoryAdapter;
 import com.example.prm_app_shopping.adapters.ProductAdapter;
-//import com.example.prm_app_shopping.api.ApiServi;
 import com.example.prm_app_shopping.adapters.SearchAdapter;
-import com.example.prm_app_shopping.api.ProductApiService;
+import com.example.prm_app_shopping.api.CategoryApiService;
 import com.example.prm_app_shopping.api.ProductApiService;
 import com.example.prm_app_shopping.databinding.ActivityCategoryBinding;
-import com.example.prm_app_shopping.databinding.ActivityMainBinding;
-import com.example.prm_app_shopping.model.Category;
 import com.example.prm_app_shopping.model.Product;
 import com.google.android.material.navigation.NavigationView;
 
@@ -38,14 +34,12 @@ import retrofit2.Response;
 
 public class CategoryActivity extends AppCompatActivity {
     ActivityCategoryBinding binding;
-    ArrayList<Category> categories;
+
     ProductAdapter productAdapter;
     ArrayList<Product> products;
-    CategoryAdapter categoryAdapter;
-    ImageView menu;
+    ImageView card, history, menu;
     AutoCompleteTextView atcProductSearch;
     NavigationView navigationView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,22 +51,39 @@ public class CategoryActivity extends AppCompatActivity {
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.menuLogin: {
+                case R.id.menuLogout: {
                     startActivity(new Intent(CategoryActivity.this, Login.class));
                     return true;
                 }
                 case R.id.menuHome: {
-                    startActivity(new Intent(CategoryActivity.this, MainActivity.class));
+                    startActivity(new Intent(CategoryActivity.this, HomeActivity.class));
                     return true;
                 }
             }
             return true;
         });
 
+        card = (ImageView) findViewById(R.id.iconCard);
+        card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CategoryActivity.this, CartActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        history = (ImageView) findViewById(R.id.iconHistory);
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CategoryActivity.this, History.class);
+                startActivity(intent);
+            }
+        });
+
         initProducts();
-        initCategories();
-        initDrawerLayout();
         setProductSearchAdapter();
+        initDrawerLayout();
     }
 
     @Override
@@ -85,7 +96,7 @@ public class CategoryActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId() ;
-        if(id == R.id.menuLogin) {
+        if(id == R.id.menuLogout) {
 
             Intent intent = new Intent(CategoryActivity.this, Login.class);
             startActivity(intent);
@@ -93,51 +104,20 @@ public class CategoryActivity extends AppCompatActivity {
         }
         if(id == R.id.menuHome) {
 
-            Intent intent2 = new Intent(CategoryActivity.this, MainActivity.class);
+            Intent intent2 = new Intent(CategoryActivity.this, HomeActivity.class);
             startActivity(intent2);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-    void initCategories(){
-        categories = new ArrayList<>();
-        categories.add(new Category("Các loại Tivi ngon ", "", "#18ab4e", "Some description", 1));
-        categories.add(new Category("Các loại Máy lạnh ngon", "", "#fb0504", "Some description", 2));
-        categories.add(new Category("Các loại Bếp ngon", "", "#ff870e", "Some description", 3));
-        categories.add(new Category("Tất cả", "", "#ff6f52", "Some description", 4));
-
-
-        categoryAdapter = new CategoryAdapter(this, categories);
-
-
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 4);
-        binding.productList.setLayoutManager(layoutManager);
-        binding.productList.setAdapter(categoryAdapter);
-    }
-
-    private  void initDrawerLayout(){
-        menu = (ImageView) findViewById(R.id.iconMenu);
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                binding.getRoot().openDrawer(GravityCompat.START);
-
-            }
-        });
-    }
-
     void initProducts(){
         products = new ArrayList<>();
         Intent intent = getIntent();
-        int category = intent.getIntExtra("category", 0);
-        ProductApiService.productApiService.getProductsByCategoryId(category).enqueue(new Callback<List<Product>>() {
+        int category = intent.getIntExtra("category",0);
+        CategoryApiService.CategoryApiService.getProductsByCategoryId(category).enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 List<Product> productList = response.body();
-//                Log.d("tagggg", String.valueOf(productList.get(0)));
                 products.addAll(productList);
                 productAdapter = new ProductAdapter(CategoryActivity.this, products);
 
@@ -153,19 +133,20 @@ public class CategoryActivity extends AppCompatActivity {
         });
 
     }
+    private  void initDrawerLayout(){
+        menu = (ImageView) findViewById(R.id.iconMenu);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.getRoot().openDrawer(GravityCompat.START);
+
+            }
+        });
+    }
     public void setProductSearchAdapter() {
         products = new ArrayList<>();
         Intent intent = getIntent();
         int category = intent.getIntExtra("category", 0);
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("https://64085ddf8ee73db92e3eafad.mockapi.io/api/")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        ProductApiService productApiService = retrofit.create(ProductApiService.class);
-//
-//        Call<List<Product>> call = productApiService.getProducts();
-//
-//        call.enqueue(new Callback<List<Product>>() {
         ProductApiService.productApiService.getProductsByCategoryId(category).enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {

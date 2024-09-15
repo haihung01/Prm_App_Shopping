@@ -12,7 +12,7 @@
         android:background="@color/purple_500"
         android:padding="8dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/tivi"
+        android:src="@drawable/img2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

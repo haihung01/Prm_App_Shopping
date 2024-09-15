@@ -1,6 +1,6 @@
 package com.example.prm_app_shopping.api;
 
-
+import com.example.prm_app_shopping.model.Category;
 import com.example.prm_app_shopping.model.Product;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,27 +11,22 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
+import retrofit2.http.Path;
 
-public interface ApiService {
-
-//    https://64085ddf8ee73db92e3eafad.mockapi.io/api/products
-
+public interface CategoryApiService {
     Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 
     //ham khoi tao
-    ApiService apiService = new Retrofit.Builder()
-            .baseUrl("https://64085ddf8ee73db92e3eafad.mockapi.io/")
+    CategoryApiService CategoryApiService = new Retrofit.Builder()
+            .baseUrl("https://64085ddf8ee73db92e3eafad.mockapi.io/api/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
-            .create(ApiService.class);
+            .create(CategoryApiService.class);
 
-    //ham call api
-    @GET("api/products")
-//    Call<Product> convertProduct();
+    @GET("/categories")
+    Call<List<Category>> getCategory();
 
-    Call<List<Product>> getProducts();
-
-    Call<List<Product>> getAllusers();
+    @GET("/categories/{id}/products")
+    Call<List<Product>> getProductsByCategoryId(@Path("id") int categoryId);
 }

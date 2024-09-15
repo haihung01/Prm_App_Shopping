@@ -37,15 +37,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
-        Category category = categories.get(position);
-        holder.binding.label.setText(category.getName());
-        Glide.with(context)
+         Category category = categories.get(position);
+         holder.binding.label.setText(category.getName());
+         Glide.with(context)
                 .load(category.getIcon())
                 .into(holder.binding.image);
 
 
 
-        holder.binding.image.setBackgroundColor(Color.parseColor(category.getColor()));
+         holder.binding.image.setBackgroundColor(Color.parseColor(category.getColor()));
 
         //--------------
         Glide.with(context)

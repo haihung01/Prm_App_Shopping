@@ -15,9 +15,12 @@ public class Product {
     @SerializedName("list_price")
     private double price;
 
+    @SerializedName("product_id")
+    private int id;
+
     private double discount;
     private int model_year;
-    private int stock, id;
+    private int stock;
     private Category category;
 
     public Product(String name, String image, String status, double price, double discount, int stock, int id, int model_year) {
@@ -43,7 +46,7 @@ public class Product {
         return image;
     }
 
-    public void setImge(String image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -92,5 +95,20 @@ public class Product {
 
     public void setModel_year(int model_year) {
         this.model_year = model_year;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", image='" + image + '\'' +
+                ", status='" + status + '\'' +
+                ", price=" + price +
+                ", discount=" + discount +
+                ", model_year=" + model_year +
+                ", stock=" + stock +
+                ", id=" + id +
+                ", category=" + category +
+                '}';
     }
 }

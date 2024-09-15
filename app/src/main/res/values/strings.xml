@@ -1,8 +1,4 @@
 <resources>
     <string name="app_name">prm_app_shopping</string>
     <string name="card">Card</string>
-    <string name="home">Trang chủ</string>
-    <string name="login">Login</string>
-    <string name="open">Open</string>
-    <string name="close">Close</string>
 </resources>

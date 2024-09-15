@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    tools:context=".activity.Register">
+    >
 
     <TextView
         android:id="@+id/textView2"
@@ -42,8 +41,17 @@
             android:layout_height="14dp"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:hint=" Username" />
+            android:hint="Firstname"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/fullname"
+            android:layout_width="match_parent"
+            android:layout_height="14dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Lastname"
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/date"
@@ -53,15 +61,6 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="date" />
-
-        <EditText
-            android:id="@+id/fullname"
-            android:layout_width="match_parent"
-            android:layout_height="14dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint=" Fullname" />
 
         <EditText
             android:id="@+id/password"
@@ -96,8 +95,8 @@
             android:layout_height="14dp"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:hint=" Email" />
+            android:hint=" Email"
+            android:inputType="textPersonName" />
 
     </LinearLayout>
 
@@ -105,8 +104,8 @@
         android:id="@+id/submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="28dp"
         android:background="@color/purple_200"
         android:text="Submit"
         android:textColor="@color/black"
@@ -117,8 +116,8 @@
         android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="28dp"
         android:background="@android:color/holo_red_light"
         android:text="Cancel"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -131,8 +130,9 @@
         android:layout_marginStart="156dp"
         android:layout_marginLeft="156dp"
         android:layout_marginTop="44dp"
+        android:src="@drawable/tgdd"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/tgdd" />
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

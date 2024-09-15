@@ -1,6 +1,6 @@
 package com.example.prm_app_shopping.activity;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
@@ -8,90 +8,149 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.prm_app_shopping.R;
+import com.example.prm_app_shopping.api.UsersApiService;
+import com.example.prm_app_shopping.model.Users;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class Register extends AppCompatActivity {
-
-    private EditText Fullname, Date, Username, Password, ConfirmPassword, Phone, Email ;
-    androidx.appcompat.widget.AppCompatButton Submit, Cancel;
+    private EditText firstname, lastname, phone, email, password, confPassword,Date;
+    AppCompatButton submit, cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.hide();
-        }
 
-        Fullname = findViewById(R.id.fullname);
+        firstname = findViewById(R.id.username);
+        lastname = findViewById(R.id.fullname);
         Date = findViewById(R.id.date);
-        Username = findViewById(R.id.username);
-        Password = findViewById(R.id.password);
-        Phone = findViewById(R.id.phone);
-        Email = findViewById(R.id.email);
-        ConfirmPassword = findViewById(R.id.confirmPassword);
+        phone = findViewById(R.id.phone);
+        email = findViewById(R.id.email);
+        password = findViewById(R.id.password);
+        confPassword = findViewById(R.id.confirmPassword);
+        submit = findViewById(R.id.submit);
+        cancel = findViewById(R.id.cancel);
 
-        Submit = findViewById(R.id.submit);
-//        Cancel = findViewById(R.id.cancel);
+        Users customer = new Users("", String.valueOf(password.getText()), String.valueOf(phone.getText()), String.valueOf(email.getText()), "", "", "", "", String.valueOf(firstname.getText()), String.valueOf(lastname.getText()));
 
-        Submit.setOnClickListener(new View.OnClickListener() {
+        submit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {checkDataEntered();}
-        }) ;
-        Date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                datePicker();
+            public void onClick(View v) {
+                if (!String.valueOf(password.getText()).equals(String.valueOf(confPassword.getText()))) {
+                    showWrongPasswordAlert("Password phải giống với confirmPassword");
+                } else {
+                    createUsers(customer);
+                }
             }
         });
-
-        Cancel = (AppCompatButton) findViewById(R.id.cancel);
-        Cancel.setOnClickListener(new View.OnClickListener() {
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Register.this,Login.class);
-                startActivity(intent);
+            public void onClick(View v) {
+                finish();
             }
         });
     }
 
+    private void createUsers(Users user) {
+        ArrayList<Users> listUsers = new ArrayList<>();
+
+        UsersApiService.UsersApiService.allUsers().enqueue(new Callback<List<Users>>() {
+            @Override
+            public void onResponse(Call<List<Users>> call, Response<List<Users>> response) {
+                List<Users> allUsers = response.body();
+                listUsers.addAll(allUsers);
+                for (Users use : listUsers
+                ) {
+                    if (user.getEmail().equals(use.getEmail())) {
+                        showWrongPasswordAlert("Email đã được sử dụng");
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Users>> call, Throwable t) {
+                showWrongPasswordAlert("không thể kiểm tra được thông tin người dùng, vui lòng kiểm tra các kết nối");
+            }
+        });
+        user.setId(String.valueOf(listUsers.size() + 1));
+
+        Call<Users> call = UsersApiService.UsersApiService.createUsers(user);
+        call.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                // Xử lý kết quả thành công
+                Users user = response.body();
+                // ...
+//                showWrongPasswordAlert("Đăng ký thành công.");
+//                Log.d("log-note","register success");
+                Intent intent = new Intent(Register.this, Login.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                // Xử lý lỗi
+                showWrongPasswordAlert("Đã có lỗi xảy ra");
+//                Log.d("log-note","ERRoR");
+            }
+        });
+    }
+
+    private void showWrongPasswordAlert(String mess) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Thông báo");
+        builder.setMessage(mess);
+        builder.setPositiveButton("Close", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
     private void checkDataEntered() {
-        String inputUserName = Username.getText().toString();
-        String inputPassword = Password.getText().toString();
-        String confirmPw = ConfirmPassword.getText().toString();
-        String inputPhone = Phone.getText().toString();
-        String inputFullName = Fullname.getText().toString();
+        String inputUserName = firstname.getText().toString();
+        String inputPassword = password.getText().toString();
+        String confirmPw = confPassword.getText().toString();
+        String inputPhone = phone.getText().toString();
+        String inputFullName = lastname.getText().toString();
         String birthdate = Date.getText().toString();
 
         if (inputUserName.isEmpty() || !inputUserName.matches("^[a-zA-Z0-9]*$")) {
-            showError(Username, "Username not only contain digits and letter");
+            showError(firstname, "Username not only contain digits and letter");
         }
         else if (birthdate.isEmpty()) {
             showError(Date, "Birthdate is required");
         }
         else if (inputFullName.isEmpty()) {
-            showError(Fullname, "FullName is required");
+            showError(lastname, "FullName is required");
         }else if (inputPassword.isEmpty() || inputPassword.length() < 8) {
-            showError(Password, "password must at least 7 characters");
+            showError(password, "password must at least 7 characters");
         } else if (!confirmPw.equals(inputPassword)) {
-            showError(ConfirmPassword, "password not match");
+            showError(confPassword, "password not match");
         } else if (inputPhone.length() != 10) {
-            showError(Phone, "Invalid Phone, must be 10 number");
-        } else if (!isEmail(Email)) {
-            showError(Email, "Invalid email");
+            showError(phone, "Invalid Phone, must be 10 number");
+        } else if (!isEmail(email)) {
+            showError(email, "Invalid email");
         }
         else {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
